@@ -1,0 +1,3 @@
+# Phase 2 generates news_sample.jsonl here: a clearly-synthetic ~200-item dataset
+# (no copyrighted article text) that the Go ingestor streams to news.raw in the
+# default replay mode, so the whole system runs offline with zero keys.

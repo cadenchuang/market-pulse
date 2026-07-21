@@ -1,0 +1,5 @@
+# Test-only dependencies. The suite uses fakes and the heuristic model, so it
+# needs NONE of the heavy ML/Kafka runtime deps — just pytest and SQLAlchemy
+# (storage tests run against a temp SQLite DB).
+pytest
+sqlalchemy

@@ -1,0 +1,5 @@
+# Export-only dependencies, needed by quantize.py to turn ProsusAI/finbert into a
+# quantized ONNX model. These are heavy (torch) and only required ONCE at export
+# time, not at runtime.
+optimum[onnxruntime]
+torch

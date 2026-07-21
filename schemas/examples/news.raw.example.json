@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "id": "replay-000042",
+  "source": "replay",
+  "feed": "synthetic-markets",
+  "url": "https://example.invalid/replay/000042",
+  "title": "Example Corp Reports Stronger Quarterly Revenue",
+  "body": "SYNTHETIC SAMPLE - Example Corp said on Monday that quarterly revenue rose versus a year earlier, citing stronger demand across its product lines. This text is synthetic and does not describe any real company or event.",
+  "language": "en",
+  "published_at": "2026-07-20T17:59:00Z",
+  "ingested_at": "2026-07-20T18:00:01Z",
+  "tickers": ["EXMP"]
+}

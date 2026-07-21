@@ -1,0 +1,11 @@
+# Runtime dependencies for the inference service (target: Python 3.11).
+# Runtime only needs to RUN the exported ONNX model + tokenizer and consume Kafka
+# — not export it — so torch/optimum are intentionally NOT here (see
+# requirements-export.txt). The quantized-ONNX-FinBERT + tokenizer ecosystem is
+# why this layer is Python.
+confluent-kafka
+onnxruntime
+transformers
+numpy
+prometheus-client
+sqlalchemy

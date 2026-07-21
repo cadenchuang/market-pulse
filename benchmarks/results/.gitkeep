@@ -1,0 +1,2 @@
+# Phase 6 writes real measured p50/p95 latency + throughput results here
+# (FP32 vs INT8 on CPU). Numbers are never hardcoded; they come from real runs.

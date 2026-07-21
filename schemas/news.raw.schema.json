@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/market-pulse/schemas/news.raw.schema.json",
+  "title": "news.raw",
+  "description": "A raw news item produced by the Go ingestion service to the Kafka topic `news.raw`. This is the entry point of the pipeline; nothing has been deduped, normalized, or scored yet. Model output (sentiment/entities) must NEVER appear on this message.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "source",
+    "title",
+    "body",
+    "published_at",
+    "ingested_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Contract version. Bump on any breaking change so both languages fail loudly on mismatch."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable unique id for the item (source GUID or a deterministic hash). Used as the Kafka message key for partitioning."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["replay", "gdelt", "rss"],
+      "description": "Where the item came from. `replay` is the offline default."
+    },
+    "feed": {
+      "type": "string",
+      "description": "Optional feed name or identifier within the source (e.g. an RSS feed title)."
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional canonical URL of the item."
+    },
+    "title": {
+      "type": "string",
+      "description": "Headline text as received from the source (unnormalized)."
+    },
+    "body": {
+      "type": "string",
+      "description": "Article body or summary text as received from the source (unnormalized)."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$",
+      "description": "Optional ISO 639-1 language code, e.g. \"en\"."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Original publish time from the source (RFC 3339 / ISO 8601, UTC)."
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time the Go ingestion service produced this item to Kafka (RFC 3339, UTC)."
+    },
+    "tickers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional ticker hints supplied by the source or replay dataset. These are NOT model output; entity extraction happens later in the Python inference layer."
+    }
+  }
+}

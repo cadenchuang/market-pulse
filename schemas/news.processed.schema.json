@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/market-pulse/schemas/news.processed.schema.json",
+  "title": "news.processed",
+  "description": "A clean, deduplicated, normalized news item produced by the Go processing consumer group to the Kafka topic `news.processed`. This is the input to the Python inference layer. It is a superset of `news.raw`: same identity fields plus processing metadata (`content_hash`, `processed_at`). Model output (sentiment/entities) still must NOT appear here — that is written to the datastore by Python, not back onto the topic.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "content_hash",
+    "source",
+    "title",
+    "body",
+    "published_at",
+    "ingested_at",
+    "processed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Contract version. Bump on any breaking change so both languages fail loudly on mismatch."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Same stable unique id carried over from news.raw. Used as the Kafka message key."
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Hash of the normalized content used for dedup in the Go processing stage. Format: `sha256:<64 lowercase hex>`."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["replay", "gdelt", "rss"],
+      "description": "Carried over from news.raw."
+    },
+    "feed": {
+      "type": "string",
+      "description": "Optional feed name or identifier, carried over from news.raw."
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional canonical URL, carried over from news.raw."
+    },
+    "title": {
+      "type": "string",
+      "description": "Normalized headline text (post whitespace/casing/unicode normalization)."
+    },
+    "body": {
+      "type": "string",
+      "description": "Normalized body text (post whitespace/casing/unicode normalization)."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$",
+      "description": "Optional ISO 639-1 language code, carried over from news.raw."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Original publish time, carried over from news.raw (RFC 3339, UTC)."
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Ingestion time, carried over from news.raw (RFC 3339, UTC)."
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time the Go processing stage produced this item to news.processed (RFC 3339, UTC)."
+    },
+    "tickers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional ticker hints carried over from news.raw. Still NOT model output."
+    }
+  }
+}

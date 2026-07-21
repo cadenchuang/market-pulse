@@ -1,0 +1,33 @@
+# Prometheus scrape config for the whole Market Pulse pipeline (provisioned as
+# code). Targets use docker-compose service DNS names; each Go stage exposes one
+# /metrics port, and the Python inference group exposes one port per worker
+# (metrics_base_port + worker_index, defaults 9103..9105 for 3 workers).
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: ingestor
+    static_configs:
+      - targets: ["ingestor:9101"]
+        labels: { stage: ingestor }
+
+  - job_name: processor
+    static_configs:
+      - targets: ["processor:9102"]
+        labels: { stage: processor }
+
+  - job_name: inference
+    static_configs:
+      - targets: ["inference:9103", "inference:9104", "inference:9105"]
+        labels: { stage: inference }
+
+  # The stress generator (compose --profile stress). Down when not running.
+  - job_name: loadtest
+    static_configs:
+      - targets: ["loadtest:9106"]
+        labels: { stage: loadtest }
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

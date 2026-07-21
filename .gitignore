@@ -1,0 +1,51 @@
+# --- Secrets ---
+.env
+*.local.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# --- Go ---
+# Compiled binaries (no fixed name yet; ignore common patterns)
+ingestor/bin/
+*.exe
+*.test
+*.out
+vendor/
+
+# --- Models / large artifacts (downloaded or generated, never committed) ---
+inference/models/
+*.onnx
+*.onnx_data
+
+# --- Data & DB artifacts (sample dataset is committed; runtime state is not) ---
+*.db
+*.sqlite
+*.sqlite3
+data/**/*.jsonl
+!data/sample/news_sample.jsonl
+
+# --- Benchmarks: keep the dir, ignore generated result files ---
+benchmarks/results/*
+!benchmarks/results/.gitkeep
+
+# --- Observability runtime state ---
+observability/grafana/data/
+observability/prometheus/data/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

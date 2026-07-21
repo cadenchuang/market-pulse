@@ -1,0 +1,111 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "schemaVersion": 39,
+  "tags": ["market-pulse"],
+  "title": "Market Pulse Pipeline",
+  "time": { "from": "now-15m", "to": "now" },
+  "refresh": "5s",
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Produce rate (msgs/s)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(market_pulse_ingestor_produced_total[1m]))", "legendFormat": "ingestor -> news.raw" },
+        { "refId": "B", "expr": "sum(rate(market_pulse_loadtest_produced_total[1m]))", "legendFormat": "loadtest -> news.raw" },
+        { "refId": "C", "expr": "sum(rate(market_pulse_processor_processed_total[1m]))", "legendFormat": "processor -> news.processed" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Processor throughput (consumed vs processed)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(market_pulse_processor_consumed_total[1m]))", "legendFormat": "consumed" },
+        { "refId": "B", "expr": "sum(rate(market_pulse_processor_processed_total[1m]))", "legendFormat": "processed" },
+        { "refId": "C", "expr": "sum(rate(market_pulse_processor_duplicates_total[1m]))", "legendFormat": "duplicates" },
+        { "refId": "D", "expr": "sum(rate(market_pulse_processor_filtered_total[1m]))", "legendFormat": "filtered" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Consumer lag per stage (backpressure)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "market_pulse_processor_consumer_lag", "legendFormat": "processor (news.raw)" },
+        { "refId": "B", "expr": "sum(market_pulse_inference_consumer_lag)", "legendFormat": "inference (news.processed)" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Inference latency (p50 / p95 / p99)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum by (le) (rate(market_pulse_inference_latency_seconds_bucket[1m])))", "legendFormat": "p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum by (le) (rate(market_pulse_inference_latency_seconds_bucket[1m])))", "legendFormat": "p95" },
+        { "refId": "C", "expr": "histogram_quantile(0.99, sum by (le) (rate(market_pulse_inference_latency_seconds_bucket[1m])))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Inference throughput by sentiment",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10, "stacking": { "mode": "normal" } } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (label) (rate(market_pulse_inference_processed_total[1m]))", "legendFormat": "{{label}}" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Error rate per stage",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(market_pulse_ingestor_produce_errors_total[1m]))", "legendFormat": "ingestor" },
+        { "refId": "B", "expr": "sum(rate(market_pulse_processor_errors_total[1m]))", "legendFormat": "processor" },
+        { "refId": "C", "expr": "sum(rate(market_pulse_inference_errors_total[1m]))", "legendFormat": "inference" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Resident memory per instance",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "fieldConfig": { "defaults": { "unit": "bytes", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "process_resident_memory_bytes", "legendFormat": "{{stage}} {{instance}}" }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Goroutines / threads (Go stages)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "go_goroutines", "legendFormat": "{{stage}} goroutines" }
+      ]
+    }
+  ]
+}

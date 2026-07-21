@@ -1,0 +1,6 @@
+# Streamlit dashboard runtime deps. Altair ships with Streamlit (used by the
+# built-in charts), so no separate plotting dep is needed.
+streamlit>=1.36
+pandas>=2.0
+sqlalchemy>=2.0
+requests>=2.31
